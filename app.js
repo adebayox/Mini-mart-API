@@ -65,6 +65,11 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 
+
+
+
+//stop
+
 mongoose
   .connect(MONGODB_URI, {useNewUrlParser: true })
   .then(result => {

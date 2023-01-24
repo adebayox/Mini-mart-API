@@ -101,33 +101,38 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 
-exports.getTotal = ( req, res, next) => {
-  const collection = client.db('MONGODB_URI').collection('title');
-    // Find the total number of items with the specified description
-    collection.countDocuments({ description: description }, (err, count) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      // Return the count
-      console.log(count);
-      client.close();
-    });
-
-}
-
-exports.postTotal = ( req, res, next) => {
-  collection.countDocuments({ description: description }, (err, count) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    // Return the count
-    product.count = req.body.count;
-    console.log(count);
-    client.close();
+exports.getTotal = (req, res, next) => {
+  res.render('total', {
+    pageTitle: 'store count',
+    path: '/total',
+    editing: false
   });
-}
+};
+
+exports.postTotal = (req, res, next) => {
+  const title = req.body.title;
+  const imageUrl = req.body.imageUrl;
+  const price = req.body.price;
+  const description = req.body.description;
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
+    userId: req.user
+  });
+  product
+    .save()
+    .then(result => {
+      // console.log(result);
+      console.log('Created Product');
+      res.redirect('/admin/products');
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 // exports.getTotal = (req, res, next) => {
 //   try {
 //     const prodId = req.body.productId;
