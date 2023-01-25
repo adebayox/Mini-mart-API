@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-
+const ApiFeatures = require("../util/apiFeatures");
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
@@ -75,19 +75,18 @@ exports.postEditProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-exports.getProducts = (req, res, next) => {
-  Product.find()
-    // .select('title price -_id')
-    // .populate('userId', 'name')
-    .then(products => {
-      console.log(products);
-      res.render('admin/products', {
-        prods: products,
-        pageTitle: 'Admin Products',
-        path: '/admin/products'
-      });
-    })
-    .catch(err => console.log(err));
+exports.getProducts = async (req, res, next) => {
+  const resultPerPage = 5;
+  const apiFeature = new ApiFeatures(Product.find(), req.query).pagination(
+    resultPerPage
+  );
+  const products = await apiFeature.query;
+
+  res.render("admin/products", {
+    prods: products,
+    pageTitle: "Admin Products",
+    path: "/admin/products",
+  });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
